@@ -8,7 +8,7 @@ The player, stuck in school, must find a way to escape. They interact with other
 
 Platform: PC (Unity)
 
-<img title="a title" alt="Alt text" src="/images/game.png">
+<img title="a title" alt="Alt text" src="/images/game-cover.png">
 
 ---
 
