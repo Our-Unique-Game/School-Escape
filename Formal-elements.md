@@ -40,12 +40,14 @@ Use screenshots to illustrate your answers.
 
 * Must solve puzzles to receive key pieces.
 * Certain hallways with security checks must be avoided.
+* the game will start with an intro that explain the rules of the games.
 
 
 ### 5. Resources
 
 * Key Pieces: Gathered by solving puzzles.
 * Hints: Available from classmates when needed.
+* the player will have a bar of the part he collected in precentage.
 
 ### 6. Conflicts
 
@@ -55,6 +57,7 @@ Use screenshots to illustrate your answers.
 ### 7. Boundaries
 
 * Game Boundaries: Limited to the school environment with each classroom presenting subject-specific puzzles.
+* the player wont be able to exit the school until he finish the game
 
 
 ### 8. Outcomes
