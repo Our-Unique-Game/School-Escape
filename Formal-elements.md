@@ -66,10 +66,12 @@ Use screenshots to illustrate your answers.
 ## Market Research
 
 the closest games we found are:
-Ghost Invasion: Idle Hunter
-Haunted Castle - Ghost Game
-Granny
+* School Escape!
+* School Days
+* Escape from School - 100 Doors
+* Stickman School Escape 2
+
 
 we search not only with simillar name to our game but also simillar patterns and rules of our game. 
-those games has a simillar to out game but our game is diffrent while we use speacial features like lights and stun the ghosts and a diffrent way to end the game.
-the players will prefer our game because he is more exciting and with more intrest to complete the game.
+those games has a simillar to out game but our game is diffrent while we use educational features like math, english and even programing to young age.
+the players will prefer our game because it not only educational but also very funny and thrilling while we have to steal princple key and escape the school.
