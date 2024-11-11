@@ -60,6 +60,7 @@ Use screenshots to illustrate your answers.
 ### 8. Outcomes
 
 * Success is escaping the school, while failure occurs if caught or unable to solve puzzles.
+* also needed talent to finish but no luck.
 
 ---
 
