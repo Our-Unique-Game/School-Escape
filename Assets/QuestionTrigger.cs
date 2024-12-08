@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro; // For TextMeshPro UI elements
 using UnityEngine.UI; // For Button UI elements
+using System.Collections; // For Coroutines
 
 public class QuestionTrigger : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class QuestionTrigger : MonoBehaviour
     [SerializeField] private TMP_InputField answerInputField; // Reference to the TMP InputField
     [SerializeField] private TMP_Text feedbackText; // Feedback text for correct or wrong answers
     [SerializeField] private Button submitButton; // Submit button for answers
+    [SerializeField] private Button closeButton; // Close button for the panel
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -26,21 +28,25 @@ public class QuestionTrigger : MonoBehaviour
             // Set the question text
             questionTextUI.text = questionText;
 
-            // Add the SubmitAnswer method to the button's OnClick event
+            // Add listeners for the buttons
             submitButton.onClick.AddListener(SubmitAnswer);
+            closeButton.onClick.AddListener(ClosePanel);
         }
     }
 
     private void SubmitAnswer()
     {
-        // Get the player's answer and trim whitespace
-        string playerAnswer = answerInputField.text.Trim();
+        // Get the player's answer and normalize it
+        string playerAnswer = NormalizeWhitespace(answerInputField.text);
 
-        // Check if the answer is correct (case-sensitive comparison)
-        if (playerAnswer.Equals(correctAnswer.Trim()))
+        // Check if the answer is correct (case-insensitive comparison)
+        if (string.Equals(playerAnswer, NormalizeWhitespace(correctAnswer), System.StringComparison.OrdinalIgnoreCase))
         {
             feedbackText.text = "Correct!";
             feedbackText.color = Color.green;
+
+            // Start coroutine to hide panel after 3 seconds
+            StartCoroutine(HidePanelAfterDelay(3f));
         }
         else
         {
@@ -50,12 +56,29 @@ public class QuestionTrigger : MonoBehaviour
 
         // Clear the input field for the next question
         answerInputField.text = "";
+    }
 
-        // Optionally, hide the panel after answering
-        // questionPanel.SetActive(false);
+    private IEnumerator HidePanelAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
 
-        // Remove the listener to avoid duplicate calls
+        // Hide the panel and cleanup
+        ClosePanel();
+    }
+
+    private void ClosePanel()
+    {
+        // Hide the question panel
+        questionPanel.SetActive(false);
+
+        // Remove listeners to avoid duplicate calls
         submitButton.onClick.RemoveListener(SubmitAnswer);
-}
+        closeButton.onClick.RemoveListener(ClosePanel);
+    }
 
+    // Helper method to normalize whitespace
+    private string NormalizeWhitespace(string input)
+    {
+        return System.Text.RegularExpressions.Regex.Replace(input, @"\s+", " ").Trim();
+    }
 }
