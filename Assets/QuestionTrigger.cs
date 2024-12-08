@@ -1,33 +1,61 @@
 using UnityEngine;
+using TMPro; // For TextMeshPro UI elements
+using UnityEngine.UI; // For Button UI elements
 
 public class QuestionTrigger : MonoBehaviour
 {
     [Header("Question Settings")]
-    public string questionText = "What is 2 + 2?"; // The question to ask
-    public string correctAnswer = "4"; // The correct answer
+    [SerializeField] private string questionText = "What is 2 + 2?"; // The question to ask
+    [SerializeField] private string correctAnswer = "4"; // The correct answer
+
+    [Header("UI Elements")]
+    [SerializeField] private GameObject questionPanel; // Reference to the UI panel
+    [SerializeField] private TMP_Text questionTextUI; // Reference to the TextMeshPro Text element
+    [SerializeField] private TMP_InputField answerInputField; // Reference to the TMP InputField
+    [SerializeField] private TMP_Text feedbackText; // Feedback text for correct or wrong answers
+    [SerializeField] private Button submitButton; // Submit button for answers
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         // Check if the object colliding is the player
         if (collision.CompareTag("Player"))
         {
-            // Log a message when the player touches the question object
-            Debug.Log("Player touched the question mark!");
+            // Show the question panel
+            questionPanel.SetActive(true);
 
-            // Trigger the question prompt
-            AskQuestion();
+            // Set the question text
+            questionTextUI.text = questionText;
 
-            // Destroy the question object
-            Destroy(gameObject);
+            // Add the SubmitAnswer method to the button's OnClick event
+            submitButton.onClick.AddListener(SubmitAnswer);
         }
     }
 
-    private void AskQuestion()
+    private void SubmitAnswer()
     {
-        // Display the question in the Console or trigger UI functionality
-        Debug.Log("Question: " + questionText);
+        // Get the player's answer and trim whitespace
+        string playerAnswer = answerInputField.text.Trim();
 
-        // Optional: Add UI logic here to show the question to the player
-        // Example: Trigger a canvas or UI panel with the question and accept input
-    }
+        // Check if the answer is correct (case-sensitive comparison)
+        if (playerAnswer.Equals(correctAnswer.Trim()))
+        {
+            feedbackText.text = "Correct!";
+            feedbackText.color = Color.green;
+        }
+        else
+        {
+            feedbackText.text = "Wrong! Try again.";
+            feedbackText.color = Color.red;
+        }
+
+        // Clear the input field for the next question
+        answerInputField.text = "";
+
+        // Optionally, hide the panel after answering
+        // questionPanel.SetActive(false);
+
+        // Remove the listener to avoid duplicate calls
+        submitButton.onClick.RemoveListener(SubmitAnswer);
+}
+
 }

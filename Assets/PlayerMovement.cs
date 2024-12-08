@@ -12,11 +12,15 @@ public class PlayerMovement : MonoBehaviour
 
     private Vector2 movement; // Movement vector
     private SpriteRenderer spriteRenderer; // Reference to the SpriteRenderer component
+    private Rigidbody2D rb; // Reference to the Rigidbody2D component
 
     private void Start()
     {
         // Get the SpriteRenderer component
         spriteRenderer = GetComponent<SpriteRenderer>();
+
+        // Get the Rigidbody2D component
+        rb = GetComponent<Rigidbody2D>();
     }
 
     private void Update()
@@ -34,8 +38,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // Move the character
-        transform.Translate(movement * speed * Time.fixedDeltaTime);
+        // Move the character using Rigidbody2D
+        rb.linearVelocity = movement * speed;
     }
 
     private void UpdateSprite()
