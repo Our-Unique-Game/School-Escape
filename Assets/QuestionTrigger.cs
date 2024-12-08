@@ -17,11 +17,29 @@ public class QuestionTrigger : MonoBehaviour
     [SerializeField] private Button submitButton; // Submit button for answers
     [SerializeField] private Button closeButton; // Close button for the panel
 
+    [Header("Sprites")]
+    [SerializeField] private SpriteRenderer questionMarkRenderer; // The SpriteRenderer for the question mark
+    [SerializeField] private Sprite redQuestionMarkSprite; // Default red question mark
+    [SerializeField] private Sprite greenQuestionMarkSprite; // Green question mark for correct answer
+
+    private PlayerMovement playerMovement; // Reference to PlayerMovement
+    private bool answeredCorrectly = false; // Tracks if the question has already been answered
+
+    private void Awake()
+    {
+        // Find the player's movement script
+        playerMovement = FindObjectOfType<PlayerMovement>();
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Check if the object colliding is the player
-        if (collision.CompareTag("Player"))
+        // Only trigger if the player collides and the question hasn't been answered correctly
+        if (collision.CompareTag("Player") && !answeredCorrectly)
         {
+            // Disable player movement
+            if (playerMovement != null)
+                playerMovement.CanMove = false;
+
             // Show the question panel
             questionPanel.SetActive(true);
 
@@ -36,7 +54,7 @@ public class QuestionTrigger : MonoBehaviour
 
     private void SubmitAnswer()
     {
-        // Get the player's answer and normalize it
+        // Get the player's answer
         string playerAnswer = NormalizeWhitespace(answerInputField.text);
 
         // Check if the answer is correct (case-insensitive comparison)
@@ -44,6 +62,15 @@ public class QuestionTrigger : MonoBehaviour
         {
             feedbackText.text = "Correct!";
             feedbackText.color = Color.green;
+
+            // Mark as answered correctly
+            answeredCorrectly = true;
+
+            // Change the SpriteRenderer to the green question mark
+            if (questionMarkRenderer != null && greenQuestionMarkSprite != null)
+            {
+                questionMarkRenderer.sprite = greenQuestionMarkSprite;
+            }
 
             // Start coroutine to hide panel after 3 seconds
             StartCoroutine(HidePanelAfterDelay(3f));
@@ -62,7 +89,7 @@ public class QuestionTrigger : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
 
-        // Hide the panel and cleanup
+        // Close the panel after delay
         ClosePanel();
     }
 
@@ -70,6 +97,13 @@ public class QuestionTrigger : MonoBehaviour
     {
         // Hide the question panel
         questionPanel.SetActive(false);
+
+        // Clear the feedback text
+        feedbackText.text = "";
+
+        // Re-enable player movement
+        if (playerMovement != null)
+            playerMovement.CanMove = true;
 
         // Remove listeners to avoid duplicate calls
         submitButton.onClick.RemoveListener(SubmitAnswer);

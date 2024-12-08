@@ -14,6 +14,9 @@ public class PlayerMovement : MonoBehaviour
     private SpriteRenderer spriteRenderer; // Reference to the SpriteRenderer component
     private Rigidbody2D rb; // Reference to the Rigidbody2D component
 
+    // Movement enabled flag
+    public bool CanMove { get; set; } = true;
+
     private void Start()
     {
         // Get the SpriteRenderer component
@@ -25,6 +28,12 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        if (!CanMove) // Disable input if movement is not allowed
+        {
+            movement = Vector2.zero;
+            return;
+        }
+
         // Get input for horizontal (A/D or Left/Right) and vertical (W/S or Up/Down) movement
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");
