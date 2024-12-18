@@ -5,114 +5,111 @@ using System.Collections; // For Coroutines
 
 public class QuestionTrigger : MonoBehaviour
 {
-    [Header("Question Settings")]
-    [SerializeField] private string questionText = "What is 2 + 2?"; // The question to ask
-    [SerializeField] private string correctAnswer = "4"; // The correct answer
+	[Header("Question Settings")]
+	[SerializeField] private string questionText = "What is 2 + 2?"; // The question to ask
+	[SerializeField] private string correctAnswer = "4"; // The correct answer
+	[Header("UI Elements")]
+	[SerializeField] private GameObject questionPanel; // Reference to the UI panel
+	[SerializeField] private TMP_Text questionTextUI; // Reference to the TextMeshPro Text element
+	[SerializeField] private TMP_InputField answerInputField; // Reference to the TMP InputField
+	[SerializeField] private TMP_Text feedbackText; // Feedback text for correct or wrong answers
+	[SerializeField] private Button submitButton; // Submit button for answers
+	[SerializeField] private Button closeButton; // Close button for the panel
+	[Header("Sprites")]
+	[SerializeField] private SpriteRenderer questionMarkRenderer; // The SpriteRenderer for the question mark
+	[SerializeField] private Sprite redQuestionMarkSprite; // Default red question mark
+	[SerializeField] private Sprite greenQuestionMarkSprite; // Green question mark for correct answer
+	[SerializeField] private PlayerMovement playerMovement; // Reference to PlayerMovement
+	[SerializeField] private bool answeredCorrectly = false; // Tracks if the question has already been answered
 
-    [Header("UI Elements")]
-    [SerializeField] private GameObject questionPanel; // Reference to the UI panel
-    [SerializeField] private TMP_Text questionTextUI; // Reference to the TextMeshPro Text element
-    [SerializeField] private TMP_InputField answerInputField; // Reference to the TMP InputField
-    [SerializeField] private TMP_Text feedbackText; // Feedback text for correct or wrong answers
-    [SerializeField] private Button submitButton; // Submit button for answers
-    [SerializeField] private Button closeButton; // Close button for the panel
+	private void Awake()
+	{
+		// Find the player's movement script
+		playerMovement = FindObjectOfType<PlayerMovement>();
+	}
 
-    [Header("Sprites")]
-    [SerializeField] private SpriteRenderer questionMarkRenderer; // The SpriteRenderer for the question mark
-    [SerializeField] private Sprite redQuestionMarkSprite; // Default red question mark
-    [SerializeField] private Sprite greenQuestionMarkSprite; // Green question mark for correct answer
+	private void OnTriggerEnter2D(Collider2D collision)
+	{
+		// Only trigger if the player collides and the question hasn't been answered correctly
+		if (collision.CompareTag("Player") && !answeredCorrectly)
+		{
+			// Disable player movement
+			if (playerMovement != null)
+				playerMovement.CanMove = false;
 
-    private PlayerMovement playerMovement; // Reference to PlayerMovement
-    private bool answeredCorrectly = false; // Tracks if the question has already been answered
+			// Show the question panel
+			questionPanel.SetActive(true);
 
-    private void Awake()
-    {
-        // Find the player's movement script
-        playerMovement = FindObjectOfType<PlayerMovement>();
-    }
+			// Set the question text
+			questionTextUI.text = questionText;
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        // Only trigger if the player collides and the question hasn't been answered correctly
-        if (collision.CompareTag("Player") && !answeredCorrectly)
-        {
-            // Disable player movement
-            if (playerMovement != null)
-                playerMovement.CanMove = false;
+			// Add listeners for the buttons
+			submitButton.onClick.AddListener(SubmitAnswer);
+			closeButton.onClick.AddListener(ClosePanel);
+		}
+	}
 
-            // Show the question panel
-            questionPanel.SetActive(true);
+	private void SubmitAnswer()
+	{
+		// Get the player's answer
+		string playerAnswer = NormalizeWhitespace(answerInputField.text);
 
-            // Set the question text
-            questionTextUI.text = questionText;
+		// Check if the answer is correct (case-insensitive comparison)
+		if (string.Equals(playerAnswer, NormalizeWhitespace(correctAnswer), System.StringComparison.OrdinalIgnoreCase))
+		{
+			feedbackText.text = "Correct!";
+			feedbackText.color = Color.green;
 
-            // Add listeners for the buttons
-            submitButton.onClick.AddListener(SubmitAnswer);
-            closeButton.onClick.AddListener(ClosePanel);
-        }
-    }
+			// Mark as answered correctly
+			answeredCorrectly = true;
 
-    private void SubmitAnswer()
-    {
-        // Get the player's answer
-        string playerAnswer = NormalizeWhitespace(answerInputField.text);
+			// Change the SpriteRenderer to the green question mark
+			if (questionMarkRenderer != null && greenQuestionMarkSprite != null)
+			{
+				questionMarkRenderer.sprite = greenQuestionMarkSprite;
+			}
 
-        // Check if the answer is correct (case-insensitive comparison)
-        if (string.Equals(playerAnswer, NormalizeWhitespace(correctAnswer), System.StringComparison.OrdinalIgnoreCase))
-        {
-            feedbackText.text = "Correct!";
-            feedbackText.color = Color.green;
+			// Start coroutine to hide panel after 3 seconds
+			StartCoroutine(HidePanelAfterDelay(3f));
+		}
+		else
+		{
+			feedbackText.text = "Wrong! Try again.";
+			feedbackText.color = Color.red;
+		}
 
-            // Mark as answered correctly
-            answeredCorrectly = true;
+		// Clear the input field for the next question
+		answerInputField.text = "";
+	}
 
-            // Change the SpriteRenderer to the green question mark
-            if (questionMarkRenderer != null && greenQuestionMarkSprite != null)
-            {
-                questionMarkRenderer.sprite = greenQuestionMarkSprite;
-            }
+	private IEnumerator HidePanelAfterDelay(float delay)
+	{
+		yield return new WaitForSeconds(delay);
 
-            // Start coroutine to hide panel after 3 seconds
-            StartCoroutine(HidePanelAfterDelay(3f));
-        }
-        else
-        {
-            feedbackText.text = "Wrong! Try again.";
-            feedbackText.color = Color.red;
-        }
+		// Close the panel after delay
+		ClosePanel();
+	}
 
-        // Clear the input field for the next question
-        answerInputField.text = "";
-    }
+	private void ClosePanel()
+	{
+		// Hide the question panel
+		questionPanel.SetActive(false);
 
-    private IEnumerator HidePanelAfterDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
+		// Clear the feedback text
+		feedbackText.text = "";
 
-        // Close the panel after delay
-        ClosePanel();
-    }
+		// Re-enable player movement
+		if (playerMovement != null)
+			playerMovement.CanMove = true;
 
-    private void ClosePanel()
-    {
-        // Hide the question panel
-        questionPanel.SetActive(false);
+		// Remove listeners to avoid duplicate calls
+		submitButton.onClick.RemoveListener(SubmitAnswer);
+		closeButton.onClick.RemoveListener(ClosePanel);
+	}
 
-        // Clear the feedback text
-        feedbackText.text = "";
-
-        // Re-enable player movement
-        if (playerMovement != null)
-            playerMovement.CanMove = true;
-
-        // Remove listeners to avoid duplicate calls
-        submitButton.onClick.RemoveListener(SubmitAnswer);
-        closeButton.onClick.RemoveListener(ClosePanel);
-    }
-
-    // Helper method to normalize whitespace
-    private string NormalizeWhitespace(string input)
-    {
-        return System.Text.RegularExpressions.Regex.Replace(input, @"\s+", " ").Trim();
-    }
+	// Helper method to normalize whitespace
+	private string NormalizeWhitespace(string input)
+	{
+		return System.Text.RegularExpressions.Regex.Replace(input, @"\s+", " ").Trim();
+	}
 }
