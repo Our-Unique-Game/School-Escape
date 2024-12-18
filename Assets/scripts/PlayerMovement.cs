@@ -5,14 +5,14 @@ public class PlayerMovement : MonoBehaviour
     public float speed = 5f; // Movement speed
 
     [Header("Directional Sprites")]
-    public Sprite downSprite; // Sprite for moving down
-    public Sprite leftSprite; // Sprite for moving left
-    public Sprite rightSprite; // Sprite for moving right
-    public Sprite upSprite; // Sprite for moving up
+    [SerializeField] public Sprite downSprite; // Sprite for moving down
+    [SerializeField] public Sprite leftSprite; // Sprite for moving left
+    [SerializeField] public Sprite rightSprite; // Sprite for moving right
+    [SerializeField] public Sprite upSprite; // Sprite for moving up
 
-    private Vector2 movement; // Movement vector
-    private SpriteRenderer spriteRenderer; // Reference to the SpriteRenderer component
-    private Rigidbody2D rb; // Reference to the Rigidbody2D component
+    [SerializeField] private Vector2 movement; // Movement vector
+    [SerializeField] private SpriteRenderer spriteRenderer; // Reference to the SpriteRenderer component
+    [SerializeField] private Rigidbody2D rb; // Reference to the Rigidbody2D component
 
     // Movement enabled flag
     public bool CanMove { get; set; } = true;
